@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     public float JumpForce;
     public GameObject FP;
     public Transform feet;
+    public float feetRange = 0.2f;
     public int DamagePoint = 10;
     public float CurrentHealth = 100;
     public int MaxHealth = 100;
@@ -31,10 +32,13 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        Grounded = Physics2D.OverlapCircle(feet.position,0.2f,floor);
+        Grounded = Physics2D.OverlapCircle(feet.position,feetRange,floor);
         HorizontalInput = Input.GetAxisRaw("Horizontal");
         rb.velocity =new Vector2(HorizontalInput*speed*150*Time.fixedDeltaTime,rb.velocity.y);
 
+            if(Grounded == true){
+                JumpCount = 0;
+            }
         if(Input.GetKeyDown(KeyCode.Space) && JumpCount == 0 ){
                 jump();
                 //JumpCount = 1;
@@ -43,9 +47,6 @@ public class PlayerMovement : MonoBehaviour
             jump();
             //JumpCount = 2;
         }
-            if(Grounded == true){
-                JumpCount = 0;
-            }
 
         if(HorizontalInput > 0.01f && !GetRight){
             transform.localScale = Vector3.one;
@@ -81,5 +82,13 @@ public class PlayerMovement : MonoBehaviour
    void flip(){
        GetRight = !GetRight;
        FP.transform.Rotate(0,180,0);
+   }
+
+   private void OnDrawGizmosSelected() {
+    if(feet == null){
+        return;
+    }
+
+    Gizmos.DrawWireSphere(feet.position,feetRange);
    }
 }
