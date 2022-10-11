@@ -13,7 +13,7 @@ public class Weapon : MonoBehaviour
     public Transform WeaponSpawner;
     public float Cooldown;
     private float FireOn;
-    
+
     //AxeScript
     public bool AxeMode = true;
     public bool IsCalled = false;
@@ -23,38 +23,43 @@ public class Weapon : MonoBehaviour
     public Rigidbody2D AxeObj;
     public float ThrowSpeed;
     public float CallSpeed;
-        IEnumerator Status;
+   IEnumerator Status;
 
     // Update is called once per frame
-    void Start() {
+    void Start()
+    {
         AxeObj = AxeObj.GetComponent<Rigidbody2D>();
-                Status = Spawn();
+      
 
     }
     void Update()
-    { 
-        if(AxeMode == true){
+    {
+        if (AxeMode == true)
+        {
             IsCalled = false;
             IsInAir = false;
             IsDetectable = false;
             AxeObj.gravityScale = 1;
             AxeObj.transform.parent = Player.transform;
             AxeObj.isKinematic = true;
-    
+
             AxeObj.transform.position = WeaponContainer.transform.position;
         }
 
-    if(IsInAir){
-            AxeObj.transform.Rotate(0,0,15f,Space.Self);
+        if (IsInAir)
+        {
+            AxeObj.transform.Rotate(0, 0, 15f, Space.Self);
 
-    }
-    else if(IsInAir == false){
-        AxeObj.angularVelocity = 0f;
-        AxeObj.velocity = Vector2.zero;
-    }
-        if(IsCalled == true){
+        }
+        else if (IsInAir == false)
+        {
+            AxeObj.angularVelocity = 0f;
+            AxeObj.velocity = Vector2.zero;
+        }
+        if (IsCalled == true)
+        {
             AxeObj.gravityScale = 0;
-            AxeObj.transform.position = Vector2.MoveTowards(AxeObj.transform.position,Player.transform.position,CallSpeed*Time.deltaTime);
+            AxeObj.transform.position = Vector2.MoveTowards(AxeObj.transform.position, Player.transform.position, CallSpeed * Time.deltaTime);
             IsInAir = true;
         }
         if (Time.time > FireOn)
@@ -63,73 +68,95 @@ public class Weapon : MonoBehaviour
             {
                 FireOn = Time.time + Cooldown;
                 Shoot();
-                
+
             }
         }
 
-        if(Input.GetMouseButtonDown(1) && AxeMode == true){
+        if (Input.GetMouseButtonDown(1) && AxeMode == true)
+        {
             ThrowAxe();
-            AxeObj.transform.Rotate(0,0,5f,Space.Self);
+            AxeObj.transform.Rotate(0, 0, 5f, Space.Self);
         }
-        if(Input.GetKeyDown(KeyCode.L) && AxeMode == false && IsCalled == false){
+        if (Input.GetKeyDown(KeyCode.L) && AxeMode == false && IsCalled == false)
+        {
             AxeObj.velocity = Vector2.zero;
             CallAxe();
-            StartCoroutine(Spawn());
+            if(Status != null){
+            StopCoroutine(Status);
+            }
+            Status = Spawn();
+            StartCoroutine(Status);
         }
 
-        
+
     }
-     
-    void Shoot(){   
+
+    void Shoot()
+    {
         Instantiate(Bullet, FirePoint.position, FirePoint.rotation);
     }
 
-    void ThrowAxe(){
+    void ThrowAxe()
+    {
         AxeObj.isKinematic = false;
         AxeObj.transform.parent = null;
         AxeMode = false;
         IsInAir = true;
-       if(PlayerS.GetRight){
-        AxeObj.AddForce(Vector2.right*ThrowSpeed);
-       }
-       else{
-        AxeObj.AddForce(Vector2.left*ThrowSpeed);
-       }
-       StartCoroutine(DetectCD());
+        if (PlayerS.GetRight)
+        {
+            AxeObj.AddForce(Vector2.right * ThrowSpeed);
+        }
+        else
+        {
+            AxeObj.AddForce(Vector2.left * ThrowSpeed);
+        }
+        StartCoroutine(DetectCD());
     }
 
-    public void PickedUp(){
+    public void PickedUp()
+    {
         Debug.Log("Picked Up");
         AxeObj.angularVelocity = 0f;
-        if(PlayerS.GetRight){
-    AxeObj.transform.rotation = Quaternion.Euler(0,180,30);
+        if(Status != null){
+        StopCoroutine(Status);
         }
-        else{
-             AxeObj.transform.rotation = Quaternion.Euler(0,0,30);
 
+        if (PlayerS.GetRight)
+        {
+            AxeObj.transform.rotation = Quaternion.Euler(0, 180, 30);
+        }
+        else
+        {
+            AxeObj.transform.rotation = Quaternion.Euler(0, 0, 30);
         }
         AxeMode = true;
-    StopCoroutine(Spawn());
+
 
     }
-    void CallAxe(){
+    void CallAxe()
+    {
         IsCalled = true;
     }
-    IEnumerator Spawn(){
-        
+    IEnumerator Spawn()
+    {
+
         yield return new WaitForSeconds(4f);
-       // Debug.Log(Spawn());
-       if(AxeMode == true){
-        Debug.Log("Stopped");
-       }
-       else if(AxeMode == false){
-    AxeObj.transform.position =WeaponSpawner.transform.position;
-    Debug.Log("Spawned");
-       }
+        // Debug.Log(Spawn());
+        if (AxeMode == true)
+        {       
+            Debug.Log("Stopped");
+        }
+        else if (AxeMode == false)
+        {
+            AxeObj.transform.position = WeaponSpawner.transform.position;
+            Debug.Log("Spawned");
+        }
     }
-    IEnumerator DetectCD(){
+   
+    IEnumerator DetectCD()
+    {
         yield return new WaitForSeconds(1f);
         IsDetectable = true;
     }
-    
+
 }

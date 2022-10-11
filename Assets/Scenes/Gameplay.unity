@@ -3302,7 +3302,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 1338412185}
   Nama: RayDEV
-  speed: 5
+  speed: 3
   Grounded: 0
   floor:
     serializedVersion: 2
@@ -4385,6 +4385,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AxeS: {fileID: 1338412190}
+  Axe: {fileID: 1829986143}
+  Axerb: {fileID: 1829986145}
 --- !u!1 &1845156508
 GameObject:
   m_ObjectHideFlags: 0
