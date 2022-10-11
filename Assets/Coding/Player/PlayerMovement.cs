@@ -13,22 +13,33 @@ public class PlayerMovement : MonoBehaviour
     public bool GetRight = true;
     public float JumpForce;
     public GameObject FP;
+    public GameObject WeaponContainer;
+    public Weapon wp;
+    public Rigidbody2D Axe;
     public Transform feet;
     public float feetRange = 0.2f;
     public int DamagePoint = 10;
     public float CurrentHealth = 100;
     public int MaxHealth = 100;
     [SerializeField] private int JumpCount = 0;
+
+    //Animation
+    public Animator anim;
     
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
         CurrentHealth = MaxHealth;
 
     }
     
+     void Update() {
+     anim.SetBool("Walk",HorizontalInput != 0);   
+     anim.SetBool("AxeMode",wp.AxeMode == true);
+    }
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -47,13 +58,16 @@ public class PlayerMovement : MonoBehaviour
             jump();
             //JumpCount = 2;
         }
+        
 
         if(HorizontalInput > 0.01f && !GetRight){
             transform.localScale = Vector3.one;
+          
            flip();
         }
         else if(HorizontalInput < -0.01f && GetRight){
             transform.localScale = new Vector3(-1,1,1);
+            
             flip();
         }
      
@@ -82,6 +96,8 @@ public class PlayerMovement : MonoBehaviour
    void flip(){
        GetRight = !GetRight;
        FP.transform.Rotate(0,180,0);
+     //  WeaponContainer.transform.Rotate(0,180,0);
+     //Axe.transform.Rotate(0,180,0);
    }
 
    private void OnDrawGizmosSelected() {

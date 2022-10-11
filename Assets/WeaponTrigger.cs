@@ -8,19 +8,25 @@ public class WeaponTrigger : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    private void OnTriggerEnter2D(Collider2D other) {
-        if(other.gameObject.tag == "Axe"){
-            if(AxeTrigger.AxeMode == false){
-            AxeTrigger.PickedUp();
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "Axe")
+        {
+            if (AxeTrigger.IsDetectable == true)
+            {
+                if (AxeTrigger.AxeMode == false)
+                {
+                    AxeTrigger.PickedUp();
+                }
             }
         }
     }

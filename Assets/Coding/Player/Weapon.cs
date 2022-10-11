@@ -9,6 +9,7 @@ public class Weapon : MonoBehaviour
     public GameObject Bullet;
     public GameObject WeaponContainer;
     public GameObject Player;
+    public PlayerMovement PlayerS;
     public Transform WeaponSpawner;
     public float Cooldown;
     private float FireOn;
@@ -16,6 +17,8 @@ public class Weapon : MonoBehaviour
     //AxeScript
     public bool AxeMode = true;
     public bool IsCalled = false;
+    public bool IsInAir = false;
+    public bool IsDetectable;
     public Transform AxeT;
     public Rigidbody2D AxeObj;
     public float ThrowSpeed;
@@ -32,16 +35,27 @@ public class Weapon : MonoBehaviour
     { 
         if(AxeMode == true){
             IsCalled = false;
+            IsInAir = false;
+            IsDetectable = false;
             AxeObj.gravityScale = 1;
             AxeObj.transform.parent = Player.transform;
             AxeObj.isKinematic = true;
-            AxeObj.transform.rotation = Quaternion.Euler(0,0,50);
+    
             AxeObj.transform.position = WeaponContainer.transform.position;
         }
 
+    if(IsInAir){
+            AxeObj.transform.Rotate(0,0,15f,Space.Self);
+
+    }
+    else if(IsInAir == false){
+        AxeObj.angularVelocity = 0f;
+        AxeObj.velocity = Vector2.zero;
+    }
         if(IsCalled == true){
             AxeObj.gravityScale = 0;
             AxeObj.transform.position = Vector2.MoveTowards(AxeObj.transform.position,Player.transform.position,CallSpeed*Time.deltaTime);
+            IsInAir = true;
         }
         if (Time.time > FireOn)
         {
@@ -55,6 +69,7 @@ public class Weapon : MonoBehaviour
 
         if(Input.GetMouseButtonDown(1) && AxeMode == true){
             ThrowAxe();
+            AxeObj.transform.Rotate(0,0,5f,Space.Self);
         }
         if(Input.GetKeyDown(KeyCode.L) && AxeMode == false && IsCalled == false){
             AxeObj.velocity = Vector2.zero;
@@ -65,7 +80,7 @@ public class Weapon : MonoBehaviour
         
     }
      
-    void Shoot(){
+    void Shoot(){   
         Instantiate(Bullet, FirePoint.position, FirePoint.rotation);
     }
 
@@ -73,11 +88,26 @@ public class Weapon : MonoBehaviour
         AxeObj.isKinematic = false;
         AxeObj.transform.parent = null;
         AxeMode = false;
+        IsInAir = true;
+       if(PlayerS.GetRight){
         AxeObj.AddForce(Vector2.right*ThrowSpeed);
+       }
+       else{
+        AxeObj.AddForce(Vector2.left*ThrowSpeed);
+       }
+       StartCoroutine(DetectCD());
     }
 
     public void PickedUp(){
         Debug.Log("Picked Up");
+        AxeObj.angularVelocity = 0f;
+        if(PlayerS.GetRight){
+    AxeObj.transform.rotation = Quaternion.Euler(0,180,30);
+        }
+        else{
+             AxeObj.transform.rotation = Quaternion.Euler(0,0,30);
+
+        }
         AxeMode = true;
     StopCoroutine(Spawn());
 
@@ -97,4 +127,9 @@ public class Weapon : MonoBehaviour
     Debug.Log("Spawned");
        }
     }
+    IEnumerator DetectCD(){
+        yield return new WaitForSeconds(1f);
+        IsDetectable = true;
+    }
+    
 }
